@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser"); 
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = 3001;
@@ -17,6 +17,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', UserSchema);
+
+app.post("/users", async (req, res) => {
+
+})
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
