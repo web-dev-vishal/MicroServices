@@ -18,8 +18,22 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-app.post("/users", async (req, res) => {
+app.get('/users', async (req,res) => {
+    const Users = await User.find();
+    res.json(users)
+})
 
+app.post("/users", async (req, res) => {
+    const { name, email} = req.body;
+
+    try {
+        const user = new User({ name, email});
+        await user.save();
+        res.status(201).json(user);
+    } catch (error) {
+        console.log("Error Message", error);
+        res.status(500).json({ error: "Intenal server Error"})
+    }
 })
 
 app.get('/', (req, res) => {
