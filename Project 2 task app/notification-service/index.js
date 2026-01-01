@@ -2,7 +2,7 @@ const amqp = require('amqplib');
 
 async function start() {
     try {
-        const connection = await amqp.connect("amqp://rabbitmq");
+        const connection = await amqp.connect("amqp://rabbitmq_node");
         const channel = await connection.createChannel();
 
         await channel.assertQueue("task_created");
