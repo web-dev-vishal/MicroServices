@@ -57,8 +57,6 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Task Service listening on port ${port}`)
-    
+    console.log(`Task Service listening on port ${port}`) 
     // connectRabbitMQWithRetry();
-
 })
