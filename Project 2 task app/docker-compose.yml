@@ -15,7 +15,7 @@ services:
     depends_on:
       - mongo
 
-  tas-service: 
+  task-service: 
     build: ./task-service
     container_name: task-service
     ports:
