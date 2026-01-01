@@ -23,6 +23,28 @@ const TaskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', TaskSchema)
 
+// Gobal Varible to store the rabbit MQ Channel and Rabbit MQ Connection 
+let channel, connection;
+async function connectRabbitMQWithRetry(retries = 5, delay = 3000) {
+    while (retries) {
+        try {
+            connection = await amqp.connect("amqp://rabbitmq");
+            channel = await connection.createChannel();
+            await channel.assertQueue("task_created");
+            console.log('Connected to RabbitMQ');
+            return;
+        } catch (error) {
+            console.log('rabbitMQ Connection Error:', error.message);
+            retries--;
+            console.log('Retrying again, retries left:', retries);
+            if (retries > 0) {
+                await new Promise(res => setTimeout(res, delay));
+            }
+        }
+    }
+    console.log('Failed to connect to RabbitMQ after multiple retries.');
+}
+
 app.get('/tasks', async (req, res) => {
     const tasks = await Task.find();
     res.json(tasks)
@@ -30,21 +52,21 @@ app.get('/tasks', async (req, res) => {
 
 app.post('/tasks', async (req, res) => {
     const { title, description, userId } = req.body;
-    
+
     try {
         const task = new Task({ title, description, userId });
         await task.save();
-        
+
         const message = { taskId: task._id, userId, title };
-        
+
         // if (!channel) {
         //     return res.status(503).json({ error: "RabbitMQ not connected" })
         // }
-        
+
         // channel.sendToQueue('task_created', Buffer.from(
         //     JSON.stringify(message)
         // ))
-        
+
         res.status(201), res.json(task);
     } catch (error) {
         console.log('Error Message', error);
@@ -57,6 +79,6 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Task Service listening on port ${port}`) 
-    // connectRabbitMQWithRetry();
+    console.log(`Task Service listening on port ${port}`)
+    connectRabbitMQWithRetry();
 })
