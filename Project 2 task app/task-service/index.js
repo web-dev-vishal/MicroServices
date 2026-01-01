@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const amqp = require("amqplib");
 
 const app = express();
 const port = 3002;
@@ -59,13 +60,13 @@ app.post('/tasks', async (req, res) => {
 
         const message = { taskId: task._id, userId, title };
 
-        // if (!channel) {
-        //     return res.status(503).json({ error: "RabbitMQ not connected" })
-        // }
+        if (!channel) {
+            return res.status(503).json({ error: "RabbitMQ not connected" })
+        }
 
-        // channel.sendToQueue('task_created', Buffer.from(
-        //     JSON.stringify(message)
-        // ))
+        channel.sendToQueue('task_created', Buffer.from(
+            JSON.stringify(message)
+        ))
 
         res.status(201), res.json(task);
     } catch (error) {
