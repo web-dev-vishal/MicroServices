@@ -7,7 +7,7 @@ const port = 3002;
 
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://mongo:27017/users', {
+mongoose.connect('mongodb://mongo:27017/tasks', {
 }).then(() => console.log('Connection to MongoDB successful✅'))
     .catch(err => console.log('MongoDB connection error:❌', err));
 
@@ -37,13 +37,13 @@ app.post('/tasks', async (req, res) => {
         
         const message = { taskId: task._id, userId, title };
         
-        if (!channel) {
-            return res.status(503).json({ error: "RabbitMQ not connected" })
-        }
+        // if (!channel) {
+        //     return res.status(503).json({ error: "RabbitMQ not connected" })
+        // }
         
-        channel.sendToQueue('task_created', Buffer.from(
-            JSON.stringify(message)
-        ))
+        // channel.sendToQueue('task_created', Buffer.from(
+        //     JSON.stringify(message)
+        // ))
         
         res.status(201), res.json(task);
     } catch (error) {
