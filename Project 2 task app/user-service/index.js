@@ -45,5 +45,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:3001`);
+    console.log(`User Server is listening at http://localhost:3001`);
 });
