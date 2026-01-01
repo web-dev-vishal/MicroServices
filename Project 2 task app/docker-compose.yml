@@ -11,8 +11,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq_node
     ports: 
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
+      - "15673:15672"
 
   user-service: 
     build: ./user-service
