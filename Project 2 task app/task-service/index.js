@@ -62,7 +62,7 @@ app.post('/tasks', async (req, res) => {
         const message = { taskId: task._id, userId, title };
 
         if (!channel) {
-            return res.status(503).json({ error: "RabbitMQ not connected" });
+            return res.status(503).json({ error: "RabbitMQ not connected ❌" });
         }
 
         channel.sendToQueue('task_created', Buffer.from(
