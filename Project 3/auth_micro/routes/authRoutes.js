@@ -12,4 +12,4 @@ routes.post('/auth/register', AuthContoller.register);
 // routes.put('/', SessionController.store);
 // routes.delete('/', SessionController.store);
 
-module.exports = routes;
+export default routes;

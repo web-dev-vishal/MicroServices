@@ -12,6 +12,9 @@ app.get('/', (req, res) => {
     res.json({ message: "Auth Micro service working" })
 })
 
+import Routes from "./routes/index.js"
+app.use(Routes)
+
 app.listen(PORT, () =>{ 
     console.log(`Server is listening at http://localhost:${PORT}`)
 });
