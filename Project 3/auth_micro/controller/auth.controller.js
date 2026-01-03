@@ -5,3 +5,5 @@ class AuthContoller {
         return res.json(payload);
     }
 }
+
+export default AuthContoller;
