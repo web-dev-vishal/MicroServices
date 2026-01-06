@@ -1,0 +1,74 @@
+import prisma from "../config/db.config.js";
+import axios from "axios";
+
+// GET POSTS WITH USERS
+export const index = async (req, res) => {
+  try {
+    const posts = await prisma.post.findMany({});
+
+    if (posts.length === 0) {
+      return res.json({ postWithUsers: [] });
+    }
+
+    // Extract unique user IDs
+    const userIds = [...new Set(posts.map((item) => item.user_id))];
+
+    // Fetch users from auth microservice
+    const response = await axios.post(
+      `${process.env.AUTH_MICRO_URL}/api/getUsers`,
+      { userIds }
+    );
+
+    // Create user lookup map
+    const users = response.data.users.reduce((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {});
+
+    // Map posts with their corresponding users
+    const postWithUsers = posts.map((post) => ({
+      ...post,
+      user: users[post.user_id] || null,
+    }));
+
+    return res.json({ postWithUsers });
+  } catch (error) {
+    console.error("The post fetch error is:", error);
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+// CREATE POST
+export const store = async (req, res) => {
+  try {
+    const authUser = req.user;
+
+    if (!authUser || !authUser.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+      return res
+        .status(400)
+        .json({ message: "Title and content are required" });
+    }
+
+    const post = await prisma.post.create({
+      data: {
+        user_id: authUser.id,
+        title,
+        content,
+      },
+    });
+
+    return res.json({
+      message: "Post created successfully!",
+      post,
+    });
+  } catch (error) {
+    console.error("Post creation error:", error);
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
